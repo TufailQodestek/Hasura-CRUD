@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { map } from 'rxjs/operators';
-import { Apollo } from 'apollo-angular';
+import { Apollo, QueryRef } from 'apollo-angular';
 import { Observable } from 'rxjs';
 import { Response, Task, } from './util/Interface/apollo_interface';
 import { GET_TASKS, ADD_TASK } from './util/graphql/queries';
@@ -19,7 +19,8 @@ export class AppComponent implements OnInit {
   title = 'hasura-course';
 
   tasks$: Observable<Task[]> | undefined;
-  form!: FormGroup
+  form!: FormGroup;
+  queryRef!: QueryRef<Response>
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -27,20 +28,35 @@ export class AppComponent implements OnInit {
       assigned_by: ['', Validators.required],
       assigned_to: ['', Validators.required]
     })
-    this.tasks$ = this.apollo.watchQuery<Response>({
+
+    // this queryRef vairable store those data which send from the Hasura Backend 
+    this.queryRef = this.apollo.watchQuery<Response>({
       query: GET_TASKS,
-    }).valueChanges.pipe(map(result => result.data.tasks,))
+    })
+    // and here Tasks$ vairable is store data of queryRef and it show data on screen  
+    this.tasks$ = this.queryRef.valueChanges.pipe(map(result => result.data.tasks,))
   }
 
-  // this function is use to add data into database 
-
+  // this function is use to add data into database  
+  // here i define queryRef vairable in this function when we add data then this function called
+  // reload queryRef vairable and we can see updated data.
   onAddTask() {
     this.apollo.mutate({
       mutation: ADD_TASK,
       variables: this.form.value
+
     }).subscribe(
-      (data) => { console.log('APPComponent -> onAddTask -> data ', data) },
-      (err) => { console.error('AppComponent -> onAddtask -> err', err) }
+      (data) => {
+        this.queryRef.refetch();
+        this.form.reset('')
+        // this.form.controls.name.reset('');
+        // this.form.controls.assigned_by.reset('')
+        console.log('APPComponent -> onAddTask -> data ', data)
+      },
+
+      (err) => {
+        console.error('AppComponent -> onAddtask -> err', err)
+      }
     )
   }
 

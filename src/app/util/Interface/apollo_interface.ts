@@ -9,8 +9,3 @@ export interface Response {
     tasks: Task[];
 }
 
-// export interface formgroup{
-//     taskName:String;
-//     assignedBy:String;
-//     assignedTo:String;
-// }
