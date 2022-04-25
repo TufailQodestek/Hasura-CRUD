@@ -1,5 +1,6 @@
 <main>
-  <form [formGroup]="form">
+  <form *ngIf="!this.update" [formGroup]="addform">
+    <h1>Insert data</h1>
     <mat-form-field class="form-field">
       <input
         matInput
@@ -31,7 +32,7 @@
     </mat-form-field>
 
     <button
-      [disabled]="form.invalid"
+      [disabled]="addform.invalid"
       mat-stroked-button
       color="primary"
       (click)="onAddTask()"
@@ -40,10 +41,47 @@
     </button>
   </form>
 
+  <!-- form for update data  -->
+
+  <form *ngIf="this.update" [formGroup]="updateform">
+    <h1>Update data</h1>
+    <mat-form-field class="form-field">
+      <input
+        matInput
+        formControlName="name"
+        type="text"
+        placeholder="Enter task name"
+      />
+    </mat-form-field>
+
+    <mat-form-field class="form-field">
+      <input
+        matInput
+        formControlName="assigned_by"
+        type="text"
+        placeholder="Assigned by"
+      />
+    </mat-form-field>
+
+    <mat-form-field class="form-field">
+      <input
+        matInput
+        formControlName="assigned_to"
+        type="text"
+        placeholder="Assigned to"
+      />
+    </mat-form-field>
+
+    <button mat-stroked-button color="primary" (click)="onUpdateTask()">
+      Update
+    </button>
+  </form>
+
   <h1>Tasks:</h1>
   <section class="list">
     <mat-card class="card" *ngFor="let task of tasks$ | async">
       <mat-card-header>
+        {{ this.ArrayData.indexOf(task.assigned_to) }}
         <mat-card-title> Task Name: {{ task.name }} </mat-card-title>
       </mat-card-header>
 
@@ -57,6 +95,27 @@
           >Assigned To <b>{{ task.assigned_to }}</b></label
         >
       </mat-card-content>
+      <mat-card-footer>
+        <!-- update button -->
+        <button
+          mat-flat-button
+          color="primary"
+          *ngIf="!this.update"
+          (click)="buttonValueChange()"
+        >
+          Update
+        </button>
+        <!-- insert button  -->
+        <button
+          mat-flat-button
+          color="primary"
+          *ngIf="this.update"
+          (click)="buttonValueChange()"
+        >
+          Insert
+        </button>
+        <button mat-flat-button color="warn">Delete</button>
+      </mat-card-footer>
     </mat-card>
   </section>
 </main>

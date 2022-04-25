@@ -7,6 +7,7 @@ export const GET_TASKS = gql`
 
     query MyQuery {
         tasks {
+          id
           name
           assigned_to
           assigned_by
@@ -26,3 +27,18 @@ mutation AddTask($name: String!, $assigned_by: String!,$assigned_to: String! ){
   }
 }
 `;
+
+export const UPDATE_TASK = gql`
+mutation UpdataTask($id:uuid!, $name: String, $assigned_by: String, $assigned_to: String ) {
+  update_tasks(_set: {name:$name , assigned_by:$assigned_by, assigned_to:$assigned_to,}, where: {id: {_eq: $id}},)
+  {
+  returning{
+    name
+    assigned_by
+    assigned_to
+  }
+    
+  }
+}
+`
+
