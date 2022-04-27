@@ -1,5 +1,10 @@
 <main>
-  <form *ngIf="!this.update" [formGroup]="addform">
+  <form
+    *ngIf="!this.update"
+    #form="ngForm"
+    [formGroup]="addform"
+    (ngSubmit)="onAddTask()"
+  >
     <h1>Insert data</h1>
     <mat-form-field class="form-field">
       <input
@@ -81,7 +86,6 @@
   <section class="list">
     <mat-card class="card" *ngFor="let task of tasks$ | async">
       <mat-card-header>
-        {{ this.ArrayData.indexOf(task.assigned_to) }}
         <mat-card-title> Task Name: {{ task.name }} </mat-card-title>
       </mat-card-header>
 
@@ -101,7 +105,7 @@
           mat-flat-button
           color="primary"
           *ngIf="!this.update"
-          (click)="buttonValueChange()"
+          (click)="fillform(task)"
         >
           Update
         </button>
@@ -110,11 +114,13 @@
           mat-flat-button
           color="primary"
           *ngIf="this.update"
-          (click)="buttonValueChange()"
+          (click)="fillform('')"
         >
           Insert
         </button>
-        <button mat-flat-button color="warn">Delete</button>
+        <button mat-flat-button color="warn" (click)="deleteData(task.id)">
+          Delete
+        </button>
       </mat-card-footer>
     </mat-card>
   </section>
